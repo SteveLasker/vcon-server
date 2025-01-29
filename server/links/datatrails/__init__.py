@@ -25,7 +25,7 @@ link_version = "0.3.0"
 
 default_options = {
     "api_url": "https://app.datatrails.ai/archivist/v2",
-    "api_url_v1": "https://app.datatrails.ai/archivist/v1",
+    "api_url_v3": "https://app.datatrails.ai/archivist/v3",
     "auth_url": "https://app.datatrails.ai/archivist/iam/v1/appidp/token",
     "asset_attributes": {"arc_display_type": "vcon_droid", "conserver_link_version": link_version},
 }
@@ -204,7 +204,7 @@ def create_event(opts: dict, asset_id: str, auth: DataTrailsAuth, event_attribut
     return response.json()
 
 
-def create_new_event(opts: dict, auth: DataTrailsAuth, attributes: dict, trails) -> dict:
+def create_v3_event(opts: dict, auth: DataTrailsAuth, attributes: dict, trails) -> dict:
     """
     Create a new DataTrails Non-Asset Event, mapping to a SCITT Envelope
 
@@ -363,7 +363,7 @@ def run(vcon_uuid: str, link_name: str, opts: dict = default_options) -> str:
         "vcon_draft_version": "01",
         "vcon_operation": vcon_operation,
     }
-    # Asset-Free Events support a collection of Trails for indexing
+    # v3 Events support a collection of Trails for indexing
     # Add the primary paths by which a vCon consumer would need to index
     trails = [
         subject,
@@ -383,9 +383,9 @@ def run(vcon_uuid: str, link_name: str, opts: dict = default_options) -> str:
     event_id = event["identity"]
     logger.info(f"DataTrails: Event Created: {event_id}")
 
-    # Asset Free Events
+    # v3 Events
     try:
-        # during preview, Asset-free events are for DataTrails testing
+        # during preview, v3/events are for DataTrails testing
         # wrapped in a try/catch to avoid errors bubbling up to the conserver
 
         event = create_new_event(opts, auth, event_attributes, trails)
